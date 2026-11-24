@@ -11,7 +11,10 @@
   "assets/hero-idle.png",
   "assets/hero-left.png",
   "assets/hero-right.png",
+  "assets/hero-hit.png",
+  "assets/hero-focus.png",
   "assets/grunt-a-idle.png",
+  "assets/grunt-a-hit.png",
   "assets/boss-dragon.png",
   "assets/shmup-bg.jpg"
  ],
@@ -22,7 +25,10 @@
  },
  "transcoded": {
   "assets/boss-dragon.png": "assets/boss-dragon.webp",
+  "assets/grunt-a-hit.png": "assets/grunt-a-hit.webp",
   "assets/grunt-a-idle.png": "assets/grunt-a-idle.webp",
+  "assets/hero-focus.png": "assets/hero-focus.webp",
+  "assets/hero-hit.png": "assets/hero-hit.webp",
   "assets/hero-idle.png": "assets/hero-idle.webp",
   "assets/hero-left.png": "assets/hero-left.webp",
   "assets/hero-right.png": "assets/hero-right.webp",
@@ -45,10 +51,10 @@
  },
  "wasmBrotli": "classes.wasm.br",
  "boot": {
-  "assets": 469716,
-  "assetsWire": 456267,
-  "wasm": 658280,
-  "wasmWire": 726551
+  "assets": 544819,
+  "assetsWire": 531125,
+  "wasm": 661004,
+  "wasmWire": 729275
  },
  "serviceWorker": true,
  "startupBudget": {
