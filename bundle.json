@@ -9,6 +9,8 @@
  ],
  "images": [
   "assets/hero-idle.png",
+  "assets/hero-left.png",
+  "assets/hero-right.png",
   "assets/grunt-a-idle.png",
   "assets/boss-dragon.png",
   "assets/shmup-bg.jpg"
@@ -22,6 +24,8 @@
   "assets/boss-dragon.png": "assets/boss-dragon.webp",
   "assets/grunt-a-idle.png": "assets/grunt-a-idle.webp",
   "assets/hero-idle.png": "assets/hero-idle.webp",
+  "assets/hero-left.png": "assets/hero-left.webp",
+  "assets/hero-right.png": "assets/hero-right.webp",
   "font-atlas/default.fontatlas": "font-atlas/default.fontatlas-webp"
  },
  "splash": {
@@ -41,10 +45,10 @@
  },
  "wasmBrotli": "classes.wasm.br",
  "boot": {
-  "assets": 414568,
-  "assetsWire": 401257,
-  "wasm": 657184,
-  "wasmWire": 725455
+  "assets": 469716,
+  "assetsWire": 456267,
+  "wasm": 658280,
+  "wasmWire": 726551
  },
  "serviceWorker": true,
  "startupBudget": {
