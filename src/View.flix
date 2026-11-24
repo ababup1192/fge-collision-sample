@@ -75,12 +75,14 @@ mod View {
 
     // ── 自機 ──
 
-    /// 自機の絵は、動画と同じく胸のあたり（絵の幅の 46%・高さの 54%）がコライダーの中心に来るように置く。
+    /// 自機の絵は、横へ動いている間は左右に傾いた絵にする（動画と同じ 3 枚）。
+    /// 動画と同じく胸のあたり（絵の幅の 46%・高さの 54%）がコライダーの中心に来るように置く。
     // WhyNot: 絵の真ん中をコライダーの中心にしない — この絵は体が中心より少し左下にあり、白い丸が胸から外れて見えた。
     def hero(w: World.World): List[Render.PlacedItem] =
         let size = 144.0;
         let at = { x = w#hero#x + (0.5 - 0.461) * size, y = w#hero#y + (0.5 - 0.537) * size };
-        { at = at, item = Render.sprite("hero", 16) |> Render.scaled(size / 192.0) } :: Nil
+        let sprite = if (w#heroLean < 0.0) "hero-left" else if (w#heroLean > 0.0) "hero-right" else "hero";
+        { at = at, item = Render.sprite(sprite, 16) |> Render.scaled(size / 192.0) } :: Nil
 
     // ── コライダー（当たり判定に渡している形） ──
 

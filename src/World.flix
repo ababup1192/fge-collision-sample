@@ -40,6 +40,7 @@ mod World {
         mode = Mode,
         tuning = Tuning.Tuning,
         hero = Vec2.Vec2,
+        heroLean = Float64,                // 横へ動いている向き（-1 左・0 止まっている・1 右）。絵の向きに使う
         shots = List[Shot],
         shotCount = Int32,
         shotTimer = Float64,
@@ -60,7 +61,7 @@ mod World {
     pub def fieldHeight(): Float64 = 720.0
 
     pub def initial(tuning: Tuning.Tuning): World =
-        enterMode(Mode.Radius, { t = 0.0, mode = Mode.Radius, tuning = tuning, hero = Vec2.zero(),
+        enterMode(Mode.Radius, { t = 0.0, mode = Mode.Radius, tuning = tuning, hero = Vec2.zero(), heroLean = 0.0,
           shots = Nil, shotCount = 0, shotTimer = 0.0, previous = Nil, current = Nil, added = Nil,
           hits = 0, bosses = 0, lineCheck = LineCheck.EveryFrame, showColliders = true, drag = None })
 
@@ -161,7 +162,7 @@ mod World {
         let speed = Tuning.rec(w#tuning)#heroSpeed * frame#dt;
         let hero = { x = Num.clamp(10.0, fieldWidth() - 10.0, w#hero#x + dx * speed),
                      y = Num.clamp(10.0, fieldHeight() - 10.0, w#hero#y + dy * speed) };
-        moveShots(frame#dt, { t = w#t + frame#dt, hero = hero | w })
+        moveShots(frame#dt, { t = w#t + frame#dt, hero = hero, heroLean = dx | w })
 
     /// 第 2 章だけ、自機が 0.12 秒おきに上へ弾を撃つ。
     def moveShots(dt: Float64, w: World): World =

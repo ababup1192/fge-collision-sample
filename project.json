@@ -10,6 +10,8 @@
   "maxDeltaTime": 0.05,
   "textures": [
     {"name": "hero", "path": "assets/hero-idle.png", "hasAlpha": true},
+    {"name": "hero-left", "path": "assets/hero-left.png", "hasAlpha": true},
+    {"name": "hero-right", "path": "assets/hero-right.png", "hasAlpha": true},
     {"name": "grunt", "path": "assets/grunt-a-idle.png", "hasAlpha": true},
     {"name": "boss", "path": "assets/boss-dragon.png", "hasAlpha": true},
     {"name": "bg", "path": "assets/shmup-bg.jpg", "hasAlpha": false}
