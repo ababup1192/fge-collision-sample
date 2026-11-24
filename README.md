@@ -1,6 +1,6 @@
 # 当たり判定サンプル（FGE）
 
-YouTube の解説動画「当たり判定」（<VIDEO_URL>）で出てきた 4 つの話を、手で動かして確かめるためのサンプルです。
+YouTube の解説動画「当たり判定」（https://youtu.be/rxlE0UiilSw）で出てきた 4 つの話を、手で動かして確かめるためのサンプルです。
 [FGE（Flix Game Engine）](https://github.com/ababup1192/flix_game_engine) で作っています。
 
 - **ブラウザで遊ぶ**: https://ababup1192.github.io/fge-collision-sample/
