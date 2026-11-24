@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "title": "当たり判定サンプル",
+  "designWidth": 1280,
+  "designHeight": 720,
+  "windowWidth": 1280,
+  "windowHeight": 720,
+  "windowScale": 1,
+  "clearColor": {"r": 0.066667, "g": 0.066667, "b": 0.101961},
+  "maxDeltaTime": 0.05,
+  "textures": [
+    {"name": "hero", "path": "assets/hero-idle.png", "hasAlpha": true},
+    {"name": "grunt", "path": "assets/grunt-a-idle.png", "hasAlpha": true},
+    {"name": "boss", "path": "assets/boss-dragon.png", "hasAlpha": true},
+    {"name": "bg", "path": "assets/shmup-bg.jpg", "hasAlpha": false}
+  ],
+  "glyphs": "used",
+  "fonts": [
+    {"name": "default", "path": "assets/MPLUSRounded1c-Bold.ttf", "fontSize": 48.0}
+  ],
+  "sounds": [],
+  "editor": {
+    "resources": [
+      {
+        "id": "collision",
+        "pattern": "assets/collision.kind.json",
+        "title": "当たり判定の値（コライダー・レイヤー・マスク）",
+        "schema": "assets/collision.schema.json",
+        "role": "tuning"
+      },
+      {
+        "id": "project",
+        "pattern": "project.json",
+        "schema": "project.schema.json",
+        "title": "ゲームの題・画面",
+        "role": "tuning"
+      }
+    ]
+  }
+}

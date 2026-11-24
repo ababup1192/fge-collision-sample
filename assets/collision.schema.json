@@ -1,0 +1,228 @@
+{
+  "//": "collision.kind.json の形の宣言（Studio の sections 方言）。値は動画の FGE の表と同じ。",
+  "version": 1,
+  "sections": {
+    "hero": {
+      "kind": "record",
+      "label": "1 自機",
+      "order": 1,
+      "fields": {
+        "radius": {
+          "type": "float",
+          "label": "コライダーの半径（px）",
+          "order": 1,
+          "min": 1,
+          "max": 80,
+          "default": 7
+        },
+        "layer": {
+          "type": "int",
+          "label": "レイヤー（自分は何か。1・2・4・8・16 の bit）",
+          "order": 2,
+          "min": 0,
+          "max": 255,
+          "default": 1
+        },
+        "mask": {
+          "type": "int",
+          "label": "マスク（誰とぶつかるか。気にする相手のレイヤーの数字を足した数）",
+          "order": 3,
+          "min": 0,
+          "max": 255,
+          "default": 6
+        },
+        "speed": {
+          "type": "float",
+          "label": "動く速さ（px/秒）",
+          "order": 4,
+          "min": 50,
+          "max": 800,
+          "default": 300
+        }
+      }
+    },
+    "enemy": {
+      "kind": "record",
+      "label": "2 敵（第 3 章のボスもレイヤーとマスクはこの値）",
+      "order": 2,
+      "fields": {
+        "radius": {
+          "type": "float",
+          "label": "コライダーの半径（px）",
+          "order": 1,
+          "min": 1,
+          "max": 120,
+          "default": 38
+        },
+        "layer": {
+          "type": "int",
+          "label": "レイヤー（自分は何か。1・2・4・8・16 の bit）",
+          "order": 2,
+          "min": 0,
+          "max": 255,
+          "default": 2
+        },
+        "mask": {
+          "type": "int",
+          "label": "マスク（誰とぶつかるか。気にする相手のレイヤーの数字を足した数）",
+          "order": 3,
+          "min": 0,
+          "max": 255,
+          "default": 8
+        }
+      }
+    },
+    "enemyBullet": {
+      "kind": "record",
+      "label": "3 敵の弾",
+      "order": 3,
+      "fields": {
+        "radius": {
+          "type": "float",
+          "label": "コライダーの半径（px）",
+          "order": 1,
+          "min": 1,
+          "max": 60,
+          "default": 9
+        },
+        "layer": {
+          "type": "int",
+          "label": "レイヤー（自分は何か。1・2・4・8・16 の bit）",
+          "order": 2,
+          "min": 0,
+          "max": 255,
+          "default": 4
+        },
+        "mask": {
+          "type": "int",
+          "label": "マスク（誰とぶつかるか。気にする相手のレイヤーの数字を足した数）",
+          "order": 3,
+          "min": 0,
+          "max": 255,
+          "default": 0
+        },
+        "speed": {
+          "type": "float",
+          "label": "弾の速さ（px/秒）",
+          "order": 4,
+          "min": 20,
+          "max": 600,
+          "default": 150
+        }
+      }
+    },
+    "heroShot": {
+      "kind": "record",
+      "label": "4 自分の弾",
+      "order": 4,
+      "fields": {
+        "width": {
+          "type": "float",
+          "label": "コライダーの幅（px）",
+          "order": 1,
+          "min": 1,
+          "max": 60,
+          "default": 6
+        },
+        "height": {
+          "type": "float",
+          "label": "コライダーの高さ（px）",
+          "order": 2,
+          "min": 1,
+          "max": 120,
+          "default": 22
+        },
+        "layer": {
+          "type": "int",
+          "label": "レイヤー（自分は何か。1・2・4・8・16 の bit）",
+          "order": 3,
+          "min": 0,
+          "max": 255,
+          "default": 8
+        },
+        "mask": {
+          "type": "int",
+          "label": "マスク（誰とぶつかるか。気にする相手のレイヤーの数字を足した数）",
+          "order": 4,
+          "min": 0,
+          "max": 255,
+          "default": 0
+        },
+        "speed": {
+          "type": "float",
+          "label": "弾の速さ（px/秒）",
+          "order": 5,
+          "min": 100,
+          "max": 2000,
+          "default": 700
+        }
+      }
+    },
+    "spawnLine": {
+      "kind": "record",
+      "label": "5 出現ライン",
+      "order": 5,
+      "fields": {
+        "height": {
+          "type": "float",
+          "label": "帯の高さ（px。幅は盤の幅）",
+          "order": 1,
+          "min": 1,
+          "max": 200,
+          "default": 20
+        },
+        "layer": {
+          "type": "int",
+          "label": "レイヤー（自分は何か。1・2・4・8・16 の bit）",
+          "order": 2,
+          "min": 0,
+          "max": 255,
+          "default": 16
+        },
+        "mask": {
+          "type": "int",
+          "label": "マスク（誰とぶつかるか。気にする相手のレイヤーの数字を足した数）",
+          "order": 3,
+          "min": 0,
+          "max": 255,
+          "default": 1
+        }
+      }
+    },
+    "boss": {
+      "kind": "record",
+      "label": "ボス（第 3 章）",
+      "order": 6,
+      "fields": {
+        "shape": {
+          "type": {
+            "enum": [
+              "circle",
+              "capsule",
+              "polygon"
+            ]
+          },
+          "label": "ボスを囲う形（circle = 円・capsule = カプセル・polygon = 絵の輪郭）",
+          "order": 1,
+          "default": "circle"
+        },
+        "circleRadius": {
+          "type": "float",
+          "label": "円の半径（px）",
+          "order": 2,
+          "min": 40,
+          "max": 360,
+          "default": 330
+        },
+        "capsuleRadius": {
+          "type": "float",
+          "label": "カプセルの太さ（半径 px）",
+          "order": 3,
+          "min": 10,
+          "max": 120,
+          "default": 70
+        }
+      }
+    }
+  }
+}
