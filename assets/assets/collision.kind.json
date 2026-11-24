@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "title": "当たり判定の値",
+  "note": "コライダーの大きさ（radius・width・height）、レイヤー（自分は何か）、マスク（誰とぶつかるか）、速さ。make debug で起動して保存すると、遊んでいる途中でもすぐ変わる。値は動画の FGE の表と同じ。",
+  "hero": { "radius": 7, "layer": 1, "mask": 6, "speed": 300 },
+  "enemy": { "radius": 38, "layer": 2, "mask": 8 },
+  "enemyBullet": { "radius": 9, "layer": 4, "mask": 0, "speed": 150 },
+  "heroShot": { "width": 6, "height": 22, "layer": 8, "mask": 0, "speed": 700 },
+  "spawnLine": { "height": 20, "layer": 16, "mask": 1 },
+  "boss": { "shape": "circle", "circleRadius": 330, "capsuleRadius": 70 }
+}
