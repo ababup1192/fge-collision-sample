@@ -12,7 +12,7 @@ mod View {
         let bodies = World.bodiesOf(w);
         let field = backdrop(w#t) ::: stage(w) ::: bulletsAndShots(w) ::: hero(w)
             ::: (if (w#showColliders) bodies |> List.flatMap(b -> colliderView(Set.memberOf(b#id, touching), b)) else Nil)
-            ::: tags(atlas, w);
+            ::: hitPop(atlas, w) ::: tags(atlas, w);
         Render.clippedAll({ position = Vec2.zero(), size = { x = World.fieldWidth(), y = World.fieldHeight() } }, field)
             ::: overlay(atlas, w) ::: Panel.view(atlas, w)
 
@@ -35,9 +35,12 @@ mod View {
         let enemies = World.enemiesOf(w#mode) |> List.zipWithIndex |> List.map(entry -> {
             let (i, at) = entry;
             let bob = Num.sin(w#t * 2.0 + Int32.toFloat64(i)) * 4.0;
-            let sprite = Render.sprite("grunt", 12) |> Render.scaled(0.5);
+            let id = Hits.idOf(Kind.Enemy, i);
+            // 自分の弾が当たった直後は、動画と同じく目がバツの絵にする。
+            let shot = Map.get(id, w#looks#enemyHitAt) |> Option.exists(hitAt -> w#t - hitAt < hurtSeconds());
+            let sprite = Render.sprite(if (shot) "grunt-hit" else "grunt", 12) |> Render.scaled(0.5);
             // 組になっている間は赤く光らせる（当たったのが分かるように）。
-            let look = if (Set.memberOf(Hits.idOf(Kind.Enemy, i), hitEnemies)) sprite |> Render.tinted(Color.rgb(1.0, 0.45, 0.5)) else sprite;
+            let look = if (Set.memberOf(id, hitEnemies)) sprite |> Render.tinted(Color.rgb(1.0, 0.45, 0.5)) else sprite;
             { at = { x = at#x, y = at#y + bob }, item = look }
         });
         match w#mode {
@@ -75,14 +78,41 @@ mod View {
 
     // ── 自機 ──
 
-    /// 自機の絵は、横へ動いている間は左右に傾いた絵にする（動画と同じ 3 枚）。
+    /// 自機の絵は動画と同じ 5 枚から選ぶ: 被弾した直後 > 左右に動いている > コライダーを見せている間は集中した顔 > ふつう。
     /// 動画と同じく胸のあたり（絵の幅の 46%・高さの 54%）がコライダーの中心に来るように置く。
     // WhyNot: 絵の真ん中をコライダーの中心にしない — この絵は体が中心より少し左下にあり、白い丸が胸から外れて見えた。
     def hero(w: World.World): List[Render.PlacedItem] =
         let size = 144.0;
         let at = { x = w#hero#x + (0.5 - 0.461) * size, y = w#hero#y + (0.5 - 0.537) * size };
-        let sprite = if (w#heroLean < 0.0) "hero-left" else if (w#heroLean > 0.0) "hero-right" else "hero";
+        let look = w#looks;
+        let sprite =
+            if (w#t - look#hitAt < hurtSeconds()) "hero-hit"
+            else if (look#lean < 0.0) "hero-left"
+            else if (look#lean > 0.0) "hero-right"
+            else if (w#showColliders) "hero-focus"
+            else "hero";
         { at = at, item = Render.sprite(sprite, 16) |> Render.scaled(size / 192.0) } :: Nil
+
+    /// 被弾した直後と見なす長さ（動画と同じ 14 コマ ≒ 0.47 秒）。
+    def hurtSeconds(): Float64 = 0.47
+
+    /// 被弾した所に広がる赤い輪と、上へ浮かぶ「被弾！」（動画と同じ見せ方）。
+    // WhyNot: 輪と字を弾の数だけ出さない — 1 コマに何発も当たると重なって読めないので、最後に被弾した 1 か所だけにする。
+    def hitPop(atlas: FontAtlas, w: World.World): List[Render.PlacedItem] =
+        let look = w#looks;
+        let age = w#t - look#hitAt;
+        if (age < 0.0 or age >= hurtSeconds()) Nil
+        else {
+            let k = age / hurtSeconds();
+            let p = look#hitPos;
+            let red = Color.rgb(1.0, 0.2, 0.33);
+            let ring = RawDraw.circleAt(p, 18.0 + 40.0 * k, red, 26) |> Render.overItem(Render.fade(0.45 * (1.0 - k)));
+            let at = { x = p#x - 60.0, y = p#y - 96.0 - 30.0 * k };
+            // 縁取りの代わりに、赤い字を 4 方向へずらして敷き、白い字を上に重ねる
+            let edge = ((-3.0, 0.0) :: (3.0, 0.0) :: (0.0, -3.0) :: (0.0, 3.0) :: Nil)
+                |> List.map(d -> Look.text(atlas, 40.0, red, 31, { x = at#x + fst(d), y = at#y + snd(d) }, "被弾！"));
+            ring :: edge ::: Look.text(atlas, 40.0, Color.rgb(1.0, 1.0, 1.0), 32, at, "被弾！") :: Nil
+        }
 
     // ── コライダー（当たり判定に渡している形） ──
 
@@ -92,8 +122,9 @@ mod View {
         let color = if (touching) Look.touchColor() else Look.enemyColor();
         match (Hits.kindOf(b#id), b#collider#shape) {
             case (Kind.Hero, CollisionShape2D.CircleShape2D(c)) =>
-                RawDraw.circleAt(b#at, c#radius + 2.5, if (touching) Look.touchColor() else Color.rgb(0.95, 0.15, 0.2), 22)
-                    :: (RawDraw.circleAt(b#at, c#radius, Color.rgb(1.0, 1.0, 1.0), 23) |> Render.overItem(Render.fade(0.5))) :: Nil
+                // WhyNot: 縁を塗りつぶした円で描かない — 半径を大きくすると自機の絵が全部隠れ、被弾の絵も見えなかった。縁は線の輪にする。
+                (RawDraw.circleAt(b#at, c#radius, Color.rgb(1.0, 1.0, 1.0), 23) |> Render.overItem(Render.fade(0.45)))
+                    :: Look.solidLoop(Look.circlePoints(b#at, c#radius), 4.0, if (touching) Look.touchColor() else Color.rgb(0.95, 0.15, 0.2), 24)
             case (_, shape) => Look.dashedLoop(outlineOf(b#at, shape), 2.5, color, 20)
         }
 

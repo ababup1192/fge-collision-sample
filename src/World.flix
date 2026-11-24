@@ -35,12 +35,16 @@ mod World {
     /// tuning は JSON から読んだ値に、スライダーとチップで手を加えた今の値（保存すると JSON の値で置き直す）。
     // WhyNot: 章ごとの値（shots・bosses・lineCheck）を章の enum の中に分けない — 1 つの record で全部見渡せる方を、
     // サンプルの読みやすさのために選んだ。使わない章では空のまま。
+    /// 絵を選ぶための値。lean は自機が横へ動いている向き（-1 左・0 止まっている・1 右）、hitAt と hitPos は自機が最後に被弾した時刻と場所、
+    /// enemyHitAt は敵ごと（番号）に自分の弾が最後に当たった時刻。
+    pub type alias Looks = { lean = Float64, hitAt = Float64, hitPos = Vec2.Vec2, enemyHitAt = Map[Int32, Float64] }
+
     pub type alias World = {
         t = Float64,
         mode = Mode,
         tuning = Tuning.Tuning,
         hero = Vec2.Vec2,
-        heroLean = Float64,                // 横へ動いている向き（-1 左・0 止まっている・1 右）。絵の向きに使う
+        looks = Looks,                     // 絵を選ぶための値（自機の向き・被弾した時刻、敵に弾が当たった時刻）
         shots = List[Shot],
         shotCount = Int32,
         shotTimer = Float64,
@@ -61,7 +65,7 @@ mod World {
     pub def fieldHeight(): Float64 = 720.0
 
     pub def initial(tuning: Tuning.Tuning): World =
-        enterMode(Mode.Radius, { t = 0.0, mode = Mode.Radius, tuning = tuning, hero = Vec2.zero(), heroLean = 0.0,
+        enterMode(Mode.Radius, { t = 0.0, mode = Mode.Radius, tuning = tuning, hero = Vec2.zero(), looks = { lean = 0.0, hitAt = -10.0, hitPos = Vec2.zero(), enemyHitAt = Map.empty() },
           shots = Nil, shotCount = 0, shotTimer = 0.0, previous = Nil, current = Nil, added = Nil,
           hits = 0, bosses = 0, lineCheck = LineCheck.EveryFrame, showColliders = true, drag = None })
 
@@ -162,7 +166,7 @@ mod World {
         let speed = Tuning.rec(w#tuning)#heroSpeed * frame#dt;
         let hero = { x = Num.clamp(10.0, fieldWidth() - 10.0, w#hero#x + dx * speed),
                      y = Num.clamp(10.0, fieldHeight() - 10.0, w#hero#y + dy * speed) };
-        moveShots(frame#dt, { t = w#t + frame#dt, hero = hero, heroLean = dx | w })
+        moveShots(frame#dt, { t = w#t + frame#dt, hero = hero, looks = { lean = dx | w#looks } | w })
 
     /// 第 2 章だけ、自機が 0.12 秒おきに上へ弾を撃つ。
     def moveShots(dt: Float64, w: World): World =
@@ -192,7 +196,13 @@ mod World {
         // 敵に当たった自分の弾は消える。
         let spent = current |> List.flatMap(p -> fst(p) :: snd(p) :: Nil) |> List.toSet;
         let shots = w#shots |> List.filter(s -> not Set.memberOf(s#id, spent));
-        { previous = w#current, current = current, added = added, hits = w#hits + hit, bosses = bosses, shots = shots | w }
+        // 被弾した時刻と場所を覚えておき、View が被弾の絵と「被弾！」を少しの間だけ出す。
+        let heroHit = if (hit > 0) { hitAt = w#t, hitPos = w#hero | w#looks } else w#looks;
+        // 自分の弾が当たった敵は、目がバツの絵にする時刻を覚える。
+        let shotEnemies = current |> List.filter(Hits.isPairOf(Kind.Enemy, Kind.HeroShot)) |> List.flatMap(p -> fst(p) :: snd(p) :: Nil)
+            |> List.filter(id -> Hits.kindOf(id) == Kind.Enemy);
+        let look = { enemyHitAt = List.foldLeft((m, id) -> Map.insert(id, w#t, m), heroHit#enemyHitAt, shotEnemies) | heroHit };
+        { previous = w#current, current = current, added = added, hits = w#hits + hit, bosses = bosses, shots = shots, looks = look | w }
 
     // ── パネルが書き換える値 ──
 

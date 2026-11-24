@@ -106,6 +106,11 @@ mod Hits {
     pub def newPairs(previous: List[(Int32, Int32)], current: List[(Int32, Int32)]): List[(Int32, Int32)] =
         Set.difference(List.toSet(current), List.toSet(previous)) |> Set.toList
 
+    /// 組が「種類 a と種類 b」の組か（順番は問わない）。
+    pub def isPairOf(a: Kind, b: Kind, pair: (Int32, Int32)): Bool =
+        let (x, y) = pair;
+        (kindOf(x) == a and kindOf(y) == b) or (kindOf(y) == a and kindOf(x) == b)
+
     /// 組が「自機と種類 kind」の組か。
     pub def isHeroWith(kind: Kind, pair: (Int32, Int32)): Bool =
         let (a, b) = pair;

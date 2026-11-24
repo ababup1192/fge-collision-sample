@@ -56,6 +56,14 @@ mod Look {
             case Nil => Nil
         }
 
+    /// points を順に実線で結んで閉じる（自機の白い丸の縁に使う）。
+    pub def solidLoop(points: List[Vec2.Vec2], width: Float64, color: Color, z: Int32): List[Render.PlacedItem] =
+        match points {
+            case first :: _ =>
+                List.zip(points, List.append(List.drop(1, points), first :: Nil)) |> List.map(edge -> RawDraw.lineSeg(fst(edge), snd(edge), width, color, z))
+            case Nil => Nil
+        }
+
     /// 円周上の点（点線の円に使う）。
     pub def circlePoints(center: Vec2.Vec2, radius: Float64): List[Vec2.Vec2] =
         let n = Int32.max(8, Float64.floor(radius * 6.2832 / 12.0) |> Float64.tryToInt32 |> Option.getWithDefault(8));
